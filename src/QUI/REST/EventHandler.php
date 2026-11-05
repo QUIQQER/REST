@@ -8,6 +8,7 @@ namespace QUI\REST;
 
 use QUI;
 use QUI\Exception;
+use Symfony\Component\HttpFoundation\Request;
 
 use function in_array;
 
@@ -27,30 +28,8 @@ class EventHandler
     public static function onRequest(QUI\Rewrite $Rewrite, string $url): void
     {
         $Request = QUI::getRequest();
-        $Config = Settings::getConfig();
 
-        $basePath = $Config->getValue('general', 'basePath');
-        $baseHost = $Config->getValue('general', 'baseHost');
-
-        if (!is_string($basePath)) {
-            $basePath = '';
-        }
-
-        if (!is_string($baseHost)) {
-            $baseHost = '';
-        } else {
-            $baseHost = str_replace(['http://', 'https://'], '', $baseHost);
-            $baseHost = rtrim($baseHost, '/');
-        }
-
-        $uri = $Request->getRequestUri();
-        $host = $Request->getHost();
-
-        if (!empty($baseHost) && $host != $baseHost) {
-            return;
-        }
-
-        if (!self::isRestRequest($uri, $basePath)) {
+        if (!self::matchesRequest($Request)) {
             return;
         }
 
@@ -71,6 +50,38 @@ class EventHandler
         QUI::getEvents()->fireEvent('restInit', [$Server, $Request]);
         $Server->run();
         exit;
+    }
+
+    public static function onWebsiteLockerAllowRequest(
+        Request $Request,
+        QUI\Rewrite $Rewrite,
+        string $url
+    ): bool {
+        return self::matchesRequest($Request);
+    }
+
+    protected static function matchesRequest(Request $Request): bool
+    {
+        $Config = Settings::getConfig();
+        $basePath = $Config->getValue('general', 'basePath');
+        $baseHost = $Config->getValue('general', 'baseHost');
+
+        if (!is_string($basePath)) {
+            $basePath = '';
+        }
+
+        if (!is_string($baseHost)) {
+            $baseHost = '';
+        } else {
+            $baseHost = str_replace(['http://', 'https://'], '', $baseHost);
+            $baseHost = rtrim($baseHost, '/');
+        }
+
+        if (!empty($baseHost) && $Request->getHost() !== $baseHost) {
+            return false;
+        }
+
+        return self::isRestRequest($Request->getRequestUri(), $basePath);
     }
 
     public static function isRestRequest(string $requestUri, string $basePath): bool
