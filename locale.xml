@@ -84,6 +84,51 @@
         </groups>
 
         <groups name="quiqqer/rest" datatype="php">
+            <locale name="settings.openapi.contact.title">
+                <de><![CDATA[Kontakt]]></de>
+                <en><![CDATA[Contact]]></en>
+                <es><![CDATA[Contacto]]></es>
+                <pt><![CDATA[Contato]]></pt>
+                <fr><![CDATA[Contact]]></fr>
+                <it><![CDATA[Contatto]]></it>
+                <pl><![CDATA[Kontakt]]></pl>
+            </locale>
+            <locale name="settings.openapi.contact.description">
+                <de><![CDATA[Diese Angaben erscheinen in der öffentlichen OpenAPI-Datei. Alle Felder sind optional.]]></de>
+                <en><![CDATA[These details appear in the public OpenAPI file. All fields are optional.]]></en>
+                <es><![CDATA[Estos datos aparecen en el archivo OpenAPI público. Todos los campos son opcionales.]]></es>
+                <pt><![CDATA[Estes dados aparecem no arquivo OpenAPI público. Todos os campos são opcionais.]]></pt>
+                <fr><![CDATA[Ces informations figurent dans le fichier OpenAPI public. Tous les champs sont facultatifs.]]></fr>
+                <it><![CDATA[Questi dati compaiono nel file OpenAPI pubblico. Tutti i campi sono facoltativi.]]></it>
+                <pl><![CDATA[Te dane pojawią się w publicznym pliku OpenAPI. Wszystkie pola są opcjonalne.]]></pl>
+            </locale>
+            <locale name="settings.openapi.contact.name">
+                <de><![CDATA[Name]]></de>
+                <en><![CDATA[Name]]></en>
+                <es><![CDATA[Nombre]]></es>
+                <pt><![CDATA[Nome]]></pt>
+                <fr><![CDATA[Nom]]></fr>
+                <it><![CDATA[Nome]]></it>
+                <pl><![CDATA[Nazwa]]></pl>
+            </locale>
+            <locale name="settings.openapi.contact.url">
+                <de><![CDATA[Kontakt-URL]]></de>
+                <en><![CDATA[Contact URL]]></en>
+                <es><![CDATA[URL de contacto]]></es>
+                <pt><![CDATA[URL de contato]]></pt>
+                <fr><![CDATA[URL de contact]]></fr>
+                <it><![CDATA[URL di contatto]]></it>
+                <pl><![CDATA[Adres URL kontaktu]]></pl>
+            </locale>
+            <locale name="settings.openapi.contact.email">
+                <de><![CDATA[E-Mail-Adresse]]></de>
+                <en><![CDATA[Email address]]></en>
+                <es><![CDATA[Correo electrónico]]></es>
+                <pt><![CDATA[Endereço de e-mail]]></pt>
+                <fr><![CDATA[Adresse e-mail]]></fr>
+                <it><![CDATA[Indirizzo e-mail]]></it>
+                <pl><![CDATA[Adres e-mail]]></pl>
+            </locale>
             <locale name="settings.openapi.description">
                 <de><![CDATA[Wähle ganze APIs oder einzelne Endpunkte für die öffentliche OpenAPI-Datei aus. Bei Auswahl einer ganzen API werden auch später dokumentierte Endpunkte aufgenommen.]]></de>
                 <en><![CDATA[Select entire APIs or individual endpoints for the public OpenAPI file. Selecting an entire API also includes endpoints documented later.]]></en>

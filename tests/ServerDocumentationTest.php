@@ -5,8 +5,10 @@ namespace QUI\REST\Tests;
 use GuzzleHttp\Psr7\ServerRequest;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use QUI\Config;
 use QUI\REST\OpenApiPublication;
 use QUI\REST\Response;
+use QUI\REST\Settings;
 use QUI\REST\Tests\Fixtures\DocumentationTestProvider;
 use QUI\REST\Tests\Fixtures\RoutingTestServer;
 use RuntimeException;
@@ -434,11 +436,16 @@ YAML,
         self::assertArrayNotHasKey('Undocumented', $options);
 
         $selection = OpenApiPublication::parseSelection('{"First":["POST /validate"],"Second":true}');
-        $specification = $Server->getPublishedOpenApi($selection);
+        $contact = [
+            'name' => 'API support',
+            'url' => 'https://example.test/index.php?id=12&project=demo&lang=en'
+        ];
+        $specification = $Server->getPublishedOpenApi($selection, $contact);
         $firstOperation = $specification['paths']['/validate']['post'];
         $secondOperation = $specification['paths']['/lookup']['get'];
 
         self::assertSame([['url' => 'https://example.test/api/']], $specification['servers']);
+        self::assertSame($contact, $specification['info']['contact']);
         self::assertSame(['/validate', '/lookup'], array_keys($specification['paths']));
         self::assertSame(['api1_bearer' => []], (array)$firstOperation['security'][0]);
         self::assertSame([], $secondOperation['security']);
@@ -477,6 +484,57 @@ YAML,
 
         self::assertNull($Server->getPublishedOpenApi(OpenApiPublication::parseSelection('')));
         self::assertNull($Server->getPublishedOpenApi(OpenApiPublication::parseSelection('{}')));
+    }
+
+    public function testPublicationUsesProviderContactUntilAContactIsConfigured(): void
+    {
+        $providerContact = [
+            'name' => 'Provider support',
+            'email' => 'provider@example.test'
+        ];
+        $definitionFile = $this->createDefinitionFile([
+            'openapi' => '3.0.3',
+            'info' => [
+                'title' => 'Documented API',
+                'version' => '1.0.0',
+                'contact' => $providerContact
+            ],
+            'paths' => [
+                '/items' => [
+                    'get' => [
+                        'responses' => [200 => ['description' => 'Result']]
+                    ]
+                ]
+            ]
+        ]);
+        $Server = new RoutingTestServer([
+            new DocumentationTestProvider('Documented', 'Documented API', $definitionFile)
+        ]);
+
+        $selection = ['Documented' => true];
+        $specification = $Server->getPublishedOpenApi($selection);
+        self::assertSame($providerContact, $specification['info']['contact']);
+
+        $configuredContact = ['name' => 'Site support'];
+        $specification = $Server->getPublishedOpenApi($selection, $configuredContact);
+        self::assertSame($configuredContact, $specification['info']['contact']);
+    }
+
+    public function testOpenApiContactSettingsOnlyReturnUsableValues(): void
+    {
+        $Config = new Config();
+        self::assertSame([], Settings::getOpenApiContact($Config));
+
+        $Config->setValue('openapi', 'contactName', ' API support ');
+        $Config->setValue('openapi', 'contactSite', 'https://example.test/contact');
+        $Config->setValue('openapi', 'contactEmail', 'invalid');
+        self::assertSame(['name' => 'API support'], Settings::getOpenApiContact($Config));
+
+        $Config->setValue('openapi', 'contactEmail', ' support@example.test ');
+        self::assertSame(
+            ['name' => 'API support', 'email' => 'support@example.test'],
+            Settings::getOpenApiContact($Config)
+        );
     }
 
     /**

@@ -19,6 +19,18 @@
                     <type><![CDATA[string]]></type>
                     <defaultvalue/>
                 </conf>
+                <conf name="contactName">
+                    <type><![CDATA[string]]></type>
+                    <defaultvalue/>
+                </conf>
+                <conf name="contactSite">
+                    <type><![CDATA[string]]></type>
+                    <defaultvalue/>
+                </conf>
+                <conf name="contactEmail">
+                    <type><![CDATA[string]]></type>
+                    <defaultvalue/>
+                </conf>
             </section>
         </config>
 
@@ -53,7 +65,30 @@
                 <category name="openapi" index="2">
                     <text>OpenAPI</text>
                     <icon>fa fa-code</icon>
-                    <settings name="openapi">
+                    <settings name="contact" index="1">
+                        <title>
+                            <locale group="quiqqer/rest" var="settings.openapi.contact.title"/>
+                        </title>
+                        <description>
+                            <locale group="quiqqer/rest" var="settings.openapi.contact.description"/>
+                        </description>
+                        <input conf="openapi.contactName">
+                            <text>
+                                <locale group="quiqqer/rest" var="settings.openapi.contact.name"/>
+                            </text>
+                        </input>
+                        <input conf="openapi.contactSite" data-qui="controls/projects/project/site/Input">
+                            <text>
+                                <locale group="quiqqer/rest" var="settings.openapi.contact.url"/>
+                            </text>
+                        </input>
+                        <input conf="openapi.contactEmail" type="email">
+                            <text>
+                                <locale group="quiqqer/rest" var="settings.openapi.contact.email"/>
+                            </text>
+                        </input>
+                    </settings>
+                    <settings name="openapi" index="2">
                         <title>/openapi.json</title>
                         <description>
                             <locale group="quiqqer/rest" var="settings.openapi.description"/>
