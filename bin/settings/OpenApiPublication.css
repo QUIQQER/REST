@@ -1,0 +1,188 @@
+.quiqqer-rest-openapi {
+    display: grid;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 60rem;
+}
+
+.quiqqer-rest-openapi__status {
+    margin: 0;
+}
+
+.quiqqer-rest-openapi__status:empty {
+    display: none;
+}
+
+.quiqqer-rest-openapi__provider {
+    min-width: 0;
+    border: 1px solid var(--qui-colors-secondary-100, currentColor);
+    border-radius: 0.5rem;
+}
+
+.quiqqer-rest-openapi__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.5rem;
+    padding-right: 1rem;
+}
+
+.quiqqer-rest-openapi .quiqqer-rest-openapi__expand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    min-width: 0;
+    min-height: 3.5rem;
+    padding: 0.65rem 1rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.quiqqer-rest-openapi__expand:hover,
+.quiqqer-rest-openapi__expand[aria-expanded="true"] {
+    background: var(--qui-colors-secondary-25, transparent);
+}
+
+.quiqqer-rest-openapi__expand:focus-visible {
+    outline: 2px solid var(--qui-colors-primary-700, currentColor);
+    outline-offset: -2px;
+}
+
+.quiqqer-rest-openapi__chevron {
+    flex: 0 0 1rem;
+    text-align: center;
+}
+
+.quiqqer-rest-openapi__expand[aria-expanded="true"] .quiqqer-rest-openapi__chevron {
+    transform: rotate(90deg);
+}
+
+.quiqqer-rest-openapi__title {
+    min-width: 0;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.quiqqer-rest-openapi__title--unavailable {
+    padding: 1rem;
+}
+
+.quiqqer-rest-openapi__count {
+    margin-inline-start: auto;
+    font-size: 0.875em;
+    text-align: right;
+}
+
+.quiqqer-rest-openapi .quiqqer-rest-openapi__whole,
+.quiqqer-rest-openapi .quiqqer-rest-openapi__endpoint {
+    float: none;
+    width: auto;
+    margin: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.quiqqer-rest-openapi .quiqqer-rest-openapi__whole {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.75rem;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--qui-colors-secondary-100, currentColor);
+    border-radius: 0.35rem;
+    white-space: nowrap;
+}
+
+.quiqqer-rest-openapi__whole:has(input:checked),
+.quiqqer-rest-openapi__endpoint:has(input:checked) {
+    background: var(--qui-colors-primary-25, transparent);
+}
+
+.quiqqer-rest-openapi input[type="checkbox"] {
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+    accent-color: var(--qui-colors-primary-700, auto);
+}
+
+.quiqqer-rest-openapi input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--qui-colors-primary-700, currentColor);
+    outline-offset: 2px;
+}
+
+.quiqqer-rest-openapi .quiqqer-rest-openapi__endpoints {
+    display: grid;
+    margin: 0;
+    padding: 0.35rem 1rem 0.65rem;
+    border-top: 1px solid var(--qui-colors-secondary-100, currentColor);
+    list-style: none;
+}
+
+.quiqqer-rest-openapi .quiqqer-rest-openapi__endpoints[hidden] {
+    display: none;
+}
+
+.quiqqer-rest-openapi__endpoints > li {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.quiqqer-rest-openapi .quiqqer-rest-openapi__endpoint {
+    display: grid;
+    grid-template-columns: 1rem 4.25rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 2.5rem;
+    padding: 0.35rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.quiqqer-rest-openapi__endpoint:hover {
+    background: var(--qui-colors-secondary-25, transparent);
+}
+
+.quiqqer-rest-openapi__method {
+    justify-self: start;
+    padding: 0.2rem 0.35rem;
+    border-radius: 0.25rem;
+    background: var(--qui-colors-secondary-50, transparent);
+    font-size: 0.75em;
+    font-weight: 600;
+}
+
+.quiqqer-rest-openapi__endpoint code {
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 36rem) {
+    .quiqqer-rest-openapi__header {
+        padding-right: 0.5rem;
+    }
+
+    .quiqqer-rest-openapi .quiqqer-rest-openapi__expand {
+        flex-wrap: wrap;
+        align-content: center;
+        padding-inline: 0.65rem;
+    }
+
+    .quiqqer-rest-openapi__count {
+        margin-inline-start: 1.65rem;
+    }
+
+    .quiqqer-rest-openapi .quiqqer-rest-openapi__endpoints {
+        padding-inline: 0.3rem;
+    }
+}

@@ -3,7 +3,9 @@
 namespace QUI\REST\Tests;
 
 use GuzzleHttp\Psr7\ServerRequest;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use QUI\REST\OpenApiPublication;
 use QUI\REST\Response;
 use QUI\REST\Tests\Fixtures\DocumentationTestProvider;
 use QUI\REST\Tests\Fixtures\RoutingTestServer;
@@ -354,6 +356,127 @@ YAML,
 
         self::assertSame(500, $Response->getStatusCode());
         self::assertSame('', (string)$Response->getBody());
+    }
+
+    public function testPublicationCombinesExplicitEndpointsWithAnEntireProvider(): void
+    {
+        $firstDefinition = $this->createDefinitionFile([
+            'openapi' => '3.0.3',
+            'info' => ['title' => 'First API', 'version' => '1.0.0'],
+            'security' => [['bearer' => []]],
+            'paths' => [
+                '/validate' => [
+                    'post' => [
+                        'operationId' => 'validate',
+                        'responses' => [
+                            200 => [
+                                'description' => 'Result',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => ['$ref' => '#/components/schemas/Result']
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                '/private' => [
+                    'get' => [
+                        'responses' => [200 => ['$ref' => '#/components/responses/Private']]
+                    ]
+                ]
+            ],
+            'components' => [
+                'securitySchemes' => ['bearer' => ['type' => 'http', 'scheme' => 'bearer']],
+                'schemas' => [
+                    'Result' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'value' => ['$ref' => '#/components/schemas/Result'],
+                            'valid' => ['type' => 'boolean']
+                        ]
+                    ]
+                ],
+                'responses' => ['Private' => ['description' => 'Private']]
+            ]
+        ]);
+        $secondDefinition = $this->createDefinitionFile([
+            'openapi' => '3.0.3',
+            'info' => ['title' => 'Second API', 'version' => '1.0.0'],
+            'paths' => [
+                '/lookup' => [
+                    'get' => [
+                        'operationId' => 'validate',
+                        'security' => [],
+                        'responses' => [
+                            200 => [
+                                'description' => 'Result',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => ['$ref' => '#/components/schemas/Result']
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            'components' => ['schemas' => ['Result' => ['type' => 'string']]]
+        ]);
+        $Server = new RoutingTestServer([
+            new DocumentationTestProvider('First', 'First API', $firstDefinition),
+            new DocumentationTestProvider('Second', 'Second API', $secondDefinition),
+            new DocumentationTestProvider('Undocumented', 'Undocumented API', false)
+        ]);
+
+        $options = $Server->getOpenApiPublicationOptions();
+        self::assertSame(['POST /validate', 'GET /private'], $options['First']['operations']);
+        self::assertArrayNotHasKey('Undocumented', $options);
+
+        $selection = OpenApiPublication::parseSelection('{"First":["POST /validate"],"Second":true}');
+        $specification = $Server->getPublishedOpenApi($selection);
+        $firstOperation = $specification['paths']['/validate']['post'];
+        $secondOperation = $specification['paths']['/lookup']['get'];
+
+        self::assertSame([['url' => 'https://example.test/api/']], $specification['servers']);
+        self::assertSame(['/validate', '/lookup'], array_keys($specification['paths']));
+        self::assertSame(['api1_bearer' => []], (array)$firstOperation['security'][0]);
+        self::assertSame([], $secondOperation['security']);
+        self::assertNotSame($firstOperation['operationId'], $secondOperation['operationId']);
+        self::assertSame(
+            '#/components/schemas/api1_Result',
+            $specification['components']['schemas']['api1_Result']['properties']['value']['$ref']
+        );
+        self::assertSame('string', $specification['components']['schemas']['api2_Result']['type']);
+        self::assertArrayNotHasKey('responses', $specification['components']);
+    }
+
+    public function testPublicationRejectsConflictingPathTemplates(): void
+    {
+        $firstDefinition = $this->createDefinitionFile([
+            'openapi' => '3.0.3',
+            'paths' => ['/items/{id}' => ['get' => ['responses' => [200 => ['description' => 'Result']]]]]
+        ]);
+        $secondDefinition = $this->createDefinitionFile([
+            'openapi' => '3.0.3',
+            'paths' => ['/items/{key}' => ['post' => ['responses' => [200 => ['description' => 'Result']]]]]
+        ]);
+        $Server = new RoutingTestServer([
+            new DocumentationTestProvider('First', 'First API', $firstDefinition),
+            new DocumentationTestProvider('Second', 'Second API', $secondDefinition)
+        ]);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Conflicting OpenAPI endpoint: POST /items/{key}');
+        $Server->getPublishedOpenApi(['First' => true, 'Second' => true]);
+    }
+
+    public function testPublicationUsesNoDefaultProvider(): void
+    {
+        $Server = new RoutingTestServer([]);
+
+        self::assertNull($Server->getPublishedOpenApi(OpenApiPublication::parseSelection('')));
+        self::assertNull($Server->getPublishedOpenApi(OpenApiPublication::parseSelection('{}')));
     }
 
     /**
