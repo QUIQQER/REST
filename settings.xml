@@ -77,7 +77,9 @@
                                 <locale group="quiqqer/rest" var="settings.openapi.contact.name"/>
                             </text>
                         </input>
-                        <input conf="openapi.contactSite" data-qui="controls/projects/project/site/Input">
+                        <input conf="openapi.contactSite"
+                               data-qui="controls/projects/project/site/Input"
+                               data-qui-options-external="1">
                             <text>
                                 <locale group="quiqqer/rest" var="settings.openapi.contact.url"/>
                             </text>
