@@ -8,7 +8,9 @@ namespace QUI\REST;
 
 use QUI;
 use QUI\Exception;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Throwable;
 
 use function in_array;
 
@@ -19,6 +21,8 @@ use function in_array;
  */
 class EventHandler
 {
+    private const OPENAPI_PATH = '/openapi.json';
+
     /**
      * @param QUI\Rewrite $Rewrite
      * @param string $url
@@ -28,6 +32,10 @@ class EventHandler
     public static function onRequest(QUI\Rewrite $Rewrite, string $url): void
     {
         $Request = QUI::getRequest();
+
+        if ($Request->getPathInfo() === self::OPENAPI_PATH && self::matchesHost($Request)) {
+            self::sendOpenApi($Request);
+        }
 
         if (!self::matchesRequest($Request)) {
             return;
@@ -62,26 +70,49 @@ class EventHandler
 
     protected static function matchesRequest(Request $Request): bool
     {
-        $Config = Settings::getConfig();
-        $basePath = $Config->getValue('general', 'basePath');
-        $baseHost = $Config->getValue('general', 'baseHost');
+        $basePath = Settings::getConfig()->getValue('general', 'basePath');
 
-        if (!is_string($basePath)) {
-            $basePath = '';
+        return self::matchesHost($Request)
+            && self::isRestRequest($Request->getRequestUri(), is_string($basePath) ? $basePath : '');
+    }
+
+    private static function matchesHost(Request $Request): bool
+    {
+        $baseHost = Settings::getConfig()->getValue('general', 'baseHost');
+
+        if (!is_string($baseHost) || $baseHost === '') {
+            return true;
         }
 
-        if (!is_string($baseHost)) {
-            $baseHost = '';
+        $baseHost = str_replace(['http://', 'https://'], '', $baseHost);
+        $baseHost = rtrim($baseHost, '/');
+
+        return $baseHost === '' || $Request->getHost() === $baseHost;
+    }
+
+    private static function sendOpenApi(Request $Request): never
+    {
+        if (!in_array($Request->getMethod(), ['GET', 'HEAD'], true)) {
+            $Response = new JsonResponse(['error' => 'Method not allowed.'], 405, ['Allow' => 'GET, HEAD']);
         } else {
-            $baseHost = str_replace(['http://', 'https://'], '', $baseHost);
-            $baseHost = rtrim($baseHost, '/');
+            try {
+                $stored = Settings::getConfig()->getValue('openapi', 'selection');
+                $selection = OpenApiPublication::parseSelection(is_string($stored) ? $stored : '');
+
+                if ($selection === []) {
+                    $Response = new JsonResponse(['error' => 'OpenAPI publication is disabled.'], 404);
+                } else {
+                    $specification = Server::getCurrentInstance()->getPublishedOpenApi($selection);
+                    $Response = new JsonResponse($specification);
+                }
+            } catch (Throwable $Exception) {
+                QUI\System\Log::writeException($Exception);
+                $Response = new JsonResponse(['error' => 'OpenAPI publication is unavailable.'], 500);
+            }
         }
 
-        if (!empty($baseHost) && $Request->getHost() !== $baseHost) {
-            return false;
-        }
-
-        return self::isRestRequest($Request->getRequestUri(), $basePath);
+        $Response->prepare($Request)->send();
+        exit;
     }
 
     public static function isRestRequest(string $requestUri, string $basePath): bool

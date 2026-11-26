@@ -14,7 +14,6 @@ use Symfony\Component\Yaml\Yaml;
 use Throwable;
 
 use function array_is_list;
-use function file_exists;
 use function file_get_contents;
 use function in_array;
 use function is_array;
@@ -367,52 +366,16 @@ class Server
             return $Response->write("No OpenApi docs available for API \"" . $apiName . "\".");
         }
 
-        $Provider = $providers[$apiName];
-        $openApiDefinitionFile = $Provider->getOpenApiDefinitionFile();
+        $specificationArray = $this->getProviderSpecification($providers[$apiName], $this->getBasePath());
 
-        if (
-            !$openApiDefinitionFile ||
-            !file_exists($openApiDefinitionFile) ||
-            !is_readable($openApiDefinitionFile)
-        ) {
+        if ($specificationArray === null) {
             return $Response->write("No OpenApi docs available for API \"" . $apiName . "\".");
-        }
-
-        $specificationArray = $this->loadOpenApiDefinition($openApiDefinitionFile);
-
-        // Add servers
-        $specificationArray['servers'] = [
-            [
-                'url' => $this->getBasePath()
-            ]
-        ];
-
-        // Add "Accept-Language" request-header-parameter to all paths and their methods
-        if (isset($specificationArray['paths'])) {
-            $acceptLanguageHeaderParameterSchema = [
-                'in' => 'header',
-                'name' => 'Accept-Language',
-                'description' => 'Language to use for the response in RFC 5646 format. QUIQQER may ignore subtags.',
-                'schema' => [
-                    'type' => 'string',
-                    'example' => 'de-DE'
-                ]
-            ];
-
-            foreach ($specificationArray['paths'] as &$methods) {
-                foreach ($methods as &$method) {
-                    $method['parameters'][] = $acceptLanguageHeaderParameterSchema;
-                }
-            }
         }
 
         try {
             QUI::getEvents()->fireEvent(
                 'quiqqerRestLoadOpenApiSpecification',
-                [
-                    $apiName,
-                    &$specificationArray
-                ]
+                [$apiName, &$specificationArray]
             );
         } catch (Exception $Exception) {
             QUI\System\Log::writeException($Exception);
@@ -461,12 +424,132 @@ class Server
     }
 
     /**
+     * @return array<string, array{title: string, version: string, operations: list<string>}>
+     */
+    public function getOpenApiPublicationOptions(): array
+    {
+        $options = [];
+
+        foreach ($this->getProvidersFromPackages() as $name => $Provider) {
+            try {
+                $specification = $this->getProviderSpecification($Provider, $this->getBasePathWithHost(), true);
+
+                if ($specification === null) {
+                    continue;
+                }
+
+                $version = OpenApiPublication::getVersion($specification);
+                $operations = array_keys(OpenApiPublication::getOperations($specification));
+            } catch (Exception $Exception) {
+                QUI\System\Log::writeException($Exception);
+                continue;
+            }
+
+            if ($operations !== []) {
+                $options[$name] = [
+                    'title' => $Provider->getTitle(),
+                    'version' => $version,
+                    'operations' => $operations
+                ];
+            }
+        }
+
+        return $options;
+    }
+
+    /**
+     * @param array<string, true|list<string>> $selection
+     * @return array<string, mixed>|null
+     */
+    public function getPublishedOpenApi(array $selection): ?array
+    {
+        if ($selection === []) {
+            return null;
+        }
+
+        $providers = $this->getProvidersFromPackages();
+        $serverUrl = $this->getBasePathWithHost();
+        $sources = [];
+
+        foreach ($selection as $name => $operations) {
+            $Provider = $providers[$name] ?? null;
+
+            if ($Provider === null) {
+                throw new \InvalidArgumentException('OpenAPI provider is unavailable: ' . $name);
+            }
+
+            $specification = $this->getProviderSpecification($Provider, $serverUrl, true);
+
+            if ($specification === null) {
+                throw new \InvalidArgumentException('OpenAPI specification is unavailable: ' . $name);
+            }
+
+            $sources[$name] = [
+                'specification' => $specification,
+                'url' => $serverUrl . 'docs/' . rawurlencode($name) . '/json',
+                'operations' => $operations
+            ];
+        }
+
+        return OpenApiPublication::build($sources, $serverUrl);
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function getProviderSpecification(
+        ProviderInterface $Provider,
+        string $serverUrl,
+        bool $preserveEmptyObjects = false
+    ): ?array {
+        $file = $Provider->getOpenApiDefinitionFile();
+
+        if (!is_string($file) || !is_file($file) || !is_readable($file)) {
+            return null;
+        }
+
+        $specification = $this->loadOpenApiDefinition($file, $preserveEmptyObjects);
+        $specification['servers'] = [['url' => $serverUrl]];
+        $languageParameter = [
+            'in' => 'header',
+            'name' => 'Accept-Language',
+            'description' => 'Language to use for the response in RFC 5646 format. QUIQQER may ignore subtags.',
+            'schema' => [
+                'type' => 'string',
+                'example' => 'de-DE'
+            ]
+        ];
+
+        foreach (OpenApiPublication::getOperations($specification) as [$path, $method]) {
+            if ($specification['paths'][$path][$method] instanceof \stdClass) {
+                $specification['paths'][$path][$method] = [];
+            }
+
+            $parameters = $specification['paths'][$path][$method]['parameters'] ?? [];
+
+            foreach ($parameters as $parameter) {
+                if (
+                    is_array($parameter)
+                    && ($parameter['in'] ?? '') === 'header'
+                    && strcasecmp((string)($parameter['name'] ?? ''), 'Accept-Language') === 0
+                ) {
+                    continue 2;
+                }
+            }
+
+            $specification['paths'][$path][$method]['parameters'][] = $languageParameter;
+        }
+
+        return $specification;
+    }
+
+    /**
      * @return array<string, mixed>
      * @throws \JsonException
      * @throws QUI\Exception
      * @throws ParseException
      */
-    private function loadOpenApiDefinition(string $definitionFile): array
+    private function loadOpenApiDefinition(string $definitionFile, bool $preserveEmptyObjects = false): array
     {
         $contents = file_get_contents($definitionFile);
 
@@ -480,14 +563,19 @@ class Server
         $extension = strtolower(pathinfo($definitionFile, PATHINFO_EXTENSION));
 
         if (in_array($extension, ['yaml', 'yml'], true)) {
-            $specification = Yaml::parse($contents);
+            $flags = $preserveEmptyObjects ? Yaml::PARSE_OBJECT_FOR_MAP : 0;
+            $specification = Yaml::parse($contents, $flags);
         } else {
             $specification = json_decode(
                 $contents,
-                true,
+                !$preserveEmptyObjects,
                 512,
                 JSON_THROW_ON_ERROR
             );
+        }
+
+        if ($preserveEmptyObjects) {
+            $specification = self::normalizeOpenApiMaps($specification);
         }
 
         if (!is_array($specification) || array_is_list($specification)) {
@@ -499,6 +587,15 @@ class Server
 
         /** @var array<string, mixed> $specification */
         return $specification;
+    }
+
+    private static function normalizeOpenApiMaps(mixed $value): mixed
+    {
+        if ($value instanceof \stdClass && get_object_vars($value) !== []) {
+            $value = get_object_vars($value);
+        }
+
+        return is_array($value) ? array_map(self::normalizeOpenApiMaps(...), $value) : $value;
     }
 
     /**
