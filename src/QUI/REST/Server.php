@@ -459,9 +459,10 @@ class Server
 
     /**
      * @param array<string, true|list<string>> $selection
+     * @param array{name?: string, url?: string, email?: string} $contact
      * @return array<string, mixed>|null
      */
-    public function getPublishedOpenApi(array $selection): ?array
+    public function getPublishedOpenApi(array $selection, array $contact = []): ?array
     {
         if ($selection === []) {
             return null;
@@ -491,7 +492,13 @@ class Server
             ];
         }
 
-        return OpenApiPublication::build($sources, $serverUrl);
+        $document = OpenApiPublication::build($sources, $serverUrl);
+
+        if ($contact !== []) {
+            $document['info']['contact'] = $contact;
+        }
+
+        return $document;
     }
 
     /**
