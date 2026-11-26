@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<quiqqer>
+<quiqqer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://www.quiqqer.com/docs/schemas/2.x/settings.xsd">
     <settings>
 
         <config>
@@ -13,6 +14,12 @@
                     <defaultvalue>/api/</defaultvalue>
                 </conf>
             </section>
+            <section name="openapi">
+                <conf name="selection">
+                    <type><![CDATA[string]]></type>
+                    <defaultvalue/>
+                </conf>
+            </section>
         </config>
 
         <window name="quiqqer-rest">
@@ -22,7 +29,7 @@
             </params>
 
             <categories>
-                <category name="cron_settings">
+                <category name="cron_settings" index="1">
                     <text>REST (Representational State Transfer)</text>
                     <icon>fa fa-braille</icon>
 
@@ -41,7 +48,19 @@
                             </text>
                         </input>
                     </settings>
+                </category>
 
+                <category name="openapi" index="2">
+                    <text>OpenAPI</text>
+                    <icon>fa fa-code</icon>
+                    <settings name="openapi">
+                        <title>/openapi.json</title>
+                        <description>
+                            <locale group="quiqqer/rest" var="settings.openapi.description"/>
+                        </description>
+                        <input conf="openapi.selection" type="hidden" label="false"
+                               data-qui="package/quiqqer/rest/bin/settings/OpenApiPublication"/>
+                    </settings>
                 </category>
             </categories>
         </window>

@@ -1,84 +1,191 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<locales>
-    <groups name="quiqqer/rest" datatype="js,php">
-        <locale name="package.title">
-            <de><![CDATA[QUIQQER - REST API]]></de>
-            <en><![CDATA[QUIQQER - REST API]]></en>
-            <es><![CDATA[QUIQQER - API REST]]></es>
-            <pt><![CDATA[QUIQQER - API REST]]></pt>
-            <fr><![CDATA[QUIQQER - API REST]]></fr>
-            <it><![CDATA[QUIQQER - API REST]]></it>
-            <pl><![CDATA[QUIQQER - REST API]]></pl>
-        </locale>
-        <locale name="package.description">
-            <de><![CDATA[Erweitert QUIQQER um einen REST API Server. QUIQQER REST ermöglicht es jedem Paket eine REST API zur Verfügung zu stellen.]]></de>
-            <en><![CDATA[Extend QUIQQER with a REST API server. QUIQQER REST allows each package to provide a REST API.]]></en>
-            <es><![CDATA[Añade un servidor de API REST a QUIQQER. QUIQQER REST permite que cada paquete ofrezca su propia API REST.]]></es>
-            <pt><![CDATA[Adiciona um servidor de API REST ao QUIQQER. O QUIQQER REST permite que cada pacote disponibilize a sua própria API REST.]]></pt>
-            <fr><![CDATA[Ajoute un serveur d’API REST à QUIQQER. QUIQQER REST permet à chaque paquet de proposer sa propre API REST.]]></fr>
-            <it><![CDATA[Aggiunge un server API REST a QUIQQER. QUIQQER REST consente a ogni pacchetto di offrire la propria API REST.]]></it>
-            <pl><![CDATA[Rozszerza QUIQQER o serwer REST API. QUIQQER REST umożliwia każdemu pakietowi udostępnianie własnego REST API.]]></pl>
-        </locale>
+<quiqqer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://www.quiqqer.com/docs/schemas/2.x/locale.xsd">
+    <locales>
+        <groups name="quiqqer/rest" datatype="js,php">
+            <locale name="package.title">
+                <de><![CDATA[QUIQQER - REST API]]></de>
+                <en><![CDATA[QUIQQER - REST API]]></en>
+                <es><![CDATA[QUIQQER - API REST]]></es>
+                <pt><![CDATA[QUIQQER - API REST]]></pt>
+                <fr><![CDATA[QUIQQER - API REST]]></fr>
+                <it><![CDATA[QUIQQER - API REST]]></it>
+                <pl><![CDATA[QUIQQER - REST API]]></pl>
+            </locale>
+            <locale name="package.description">
+                <de><![CDATA[Erweitert QUIQQER um einen REST API Server. QUIQQER REST ermöglicht es jedem Paket eine REST API zur Verfügung zu stellen.]]></de>
+                <en><![CDATA[Extend QUIQQER with a REST API server. QUIQQER REST allows each package to provide a REST API.]]></en>
+                <es><![CDATA[Añade un servidor de API REST a QUIQQER. QUIQQER REST permite que cada paquete ofrezca su propia API REST.]]></es>
+                <pt><![CDATA[Adiciona um servidor de API REST ao QUIQQER. O QUIQQER REST permite que cada pacote disponibilize a sua própria API REST.]]></pt>
+                <fr><![CDATA[Ajoute un serveur d’API REST à QUIQQER. QUIQQER REST permet à chaque paquet de proposer sa propre API REST.]]></fr>
+                <it><![CDATA[Aggiunge un server API REST a QUIQQER. QUIQQER REST consente a ogni pacchetto di offrire la propria API REST.]]></it>
+                <pl><![CDATA[Rozszerza QUIQQER o serwer REST API. QUIQQER REST umożliwia każdemu pakietowi udostępnianie własnego REST API.]]></pl>
+            </locale>
 
-        <locale name="settings.cron.title">
-            <de><![CDATA[REST Host Einstellungen]]></de>
-            <en><![CDATA[REST Host Settings]]></en>
-            <es><![CDATA[Configuración del host REST]]></es>
-            <pt><![CDATA[Definições do anfitrião REST]]></pt>
-            <fr><![CDATA[Paramètres de l’hôte REST]]></fr>
-            <it><![CDATA[Impostazioni dell’host REST]]></it>
-            <pl><![CDATA[Ustawienia hosta REST]]></pl>
-        </locale>
-        <locale name="settings.baseHost">
-            <de><![CDATA[Basis-Host]]></de>
-            <en><![CDATA[Base host]]></en>
-            <es><![CDATA[Host base]]></es>
-            <pt><![CDATA[Anfitrião base]]></pt>
-            <fr><![CDATA[Hôte de base]]></fr>
-            <it><![CDATA[Host di base]]></it>
-            <pl><![CDATA[Host bazowy]]></pl>
-        </locale>
-        <locale name="settings.basePath">
-            <de><![CDATA[Basispfad]]></de>
-            <en><![CDATA[Base path]]></en>
-            <es><![CDATA[Ruta base]]></es>
-            <pt><![CDATA[Caminho base]]></pt>
-            <fr><![CDATA[Chemin de base]]></fr>
-            <it><![CDATA[Percorso di base]]></it>
-            <pl><![CDATA[Ścieżka bazowa]]></pl>
-        </locale>
-    </groups>
+            <locale name="settings.cron.title">
+                <de><![CDATA[REST Host Einstellungen]]></de>
+                <en><![CDATA[REST Host Settings]]></en>
+                <es><![CDATA[Configuración del host REST]]></es>
+                <pt><![CDATA[Definições do anfitrião REST]]></pt>
+                <fr><![CDATA[Paramètres de l’hôte REST]]></fr>
+                <it><![CDATA[Impostazioni dell’host REST]]></it>
+                <pl><![CDATA[Ustawienia hosta REST]]></pl>
+            </locale>
+            <locale name="settings.baseHost">
+                <de><![CDATA[Basis-Host]]></de>
+                <en><![CDATA[Base host]]></en>
+                <es><![CDATA[Host base]]></es>
+                <pt><![CDATA[Anfitrião base]]></pt>
+                <fr><![CDATA[Hôte de base]]></fr>
+                <it><![CDATA[Host di base]]></it>
+                <pl><![CDATA[Host bazowy]]></pl>
+            </locale>
+            <locale name="settings.basePath">
+                <de><![CDATA[Basispfad]]></de>
+                <en><![CDATA[Base path]]></en>
+                <es><![CDATA[Ruta base]]></es>
+                <pt><![CDATA[Caminho base]]></pt>
+                <fr><![CDATA[Chemin de base]]></fr>
+                <it><![CDATA[Percorso di base]]></it>
+                <pl><![CDATA[Ścieżka bazowa]]></pl>
+            </locale>
+        </groups>
 
-    <groups name="quiqqer/rest" datatype="php">
+        <groups name="quiqqer/rest" datatype="php">
 
-        <locale name="DocsList.title">
-            <de><![CDATA[QUIQQER REST APIs - Liste]]></de>
-            <en><![CDATA[QUIQQER REST APIs - List]]></en>
-            <es><![CDATA[Lista de API REST de QUIQQER]]></es>
-            <pt><![CDATA[Lista de API REST do QUIQQER]]></pt>
-            <fr><![CDATA[Liste des API REST de QUIQQER]]></fr>
-            <it><![CDATA[Elenco delle API REST di QUIQQER]]></it>
-            <pl><![CDATA[Lista REST API QUIQQER]]></pl>
-        </locale>
-        <locale name="DocsList.tbl.header.title">
-            <de><![CDATA[API]]></de>
-            <en><![CDATA[API]]></en>
-            <es><![CDATA[API]]></es>
-            <pt><![CDATA[API]]></pt>
-            <fr><![CDATA[API]]></fr>
-            <it><![CDATA[API]]></it>
-            <pl><![CDATA[API]]></pl>
-        </locale>
-        <locale name="DocsList.tbl.header.docsLink">
-            <de><![CDATA[Dokumentation]]></de>
-            <en><![CDATA[Documentation]]></en>
-            <es><![CDATA[Documentación]]></es>
-            <pt><![CDATA[Documentação]]></pt>
-            <fr><![CDATA[Documentation]]></fr>
-            <it><![CDATA[Documentazione]]></it>
-            <pl><![CDATA[Dokumentacja]]></pl>
-        </locale>
+            <locale name="DocsList.title">
+                <de><![CDATA[QUIQQER REST APIs - Liste]]></de>
+                <en><![CDATA[QUIQQER REST APIs - List]]></en>
+                <es><![CDATA[Lista de API REST de QUIQQER]]></es>
+                <pt><![CDATA[Lista de API REST do QUIQQER]]></pt>
+                <fr><![CDATA[Liste des API REST de QUIQQER]]></fr>
+                <it><![CDATA[Elenco delle API REST di QUIQQER]]></it>
+                <pl><![CDATA[Lista REST API QUIQQER]]></pl>
+            </locale>
+            <locale name="DocsList.tbl.header.title">
+                <de><![CDATA[API]]></de>
+                <en><![CDATA[API]]></en>
+                <es><![CDATA[API]]></es>
+                <pt><![CDATA[API]]></pt>
+                <fr><![CDATA[API]]></fr>
+                <it><![CDATA[API]]></it>
+                <pl><![CDATA[API]]></pl>
+            </locale>
+            <locale name="DocsList.tbl.header.docsLink">
+                <de><![CDATA[Dokumentation]]></de>
+                <en><![CDATA[Documentation]]></en>
+                <es><![CDATA[Documentación]]></es>
+                <pt><![CDATA[Documentação]]></pt>
+                <fr><![CDATA[Documentation]]></fr>
+                <it><![CDATA[Documentazione]]></it>
+                <pl><![CDATA[Dokumentacja]]></pl>
+            </locale>
 
-    </groups>
+        </groups>
 
-</locales>
+        <groups name="quiqqer/rest" datatype="php">
+            <locale name="settings.openapi.description">
+                <de><![CDATA[Wähle ganze APIs oder einzelne Endpunkte für die öffentliche OpenAPI-Datei aus. Bei Auswahl einer ganzen API werden auch später dokumentierte Endpunkte aufgenommen.]]></de>
+                <en><![CDATA[Select entire APIs or individual endpoints for the public OpenAPI file. Selecting an entire API also includes endpoints documented later.]]></en>
+                <es><![CDATA[Selecciona API completas o puntos de acceso individuales para el archivo OpenAPI público. Si seleccionas una API completa, se incluirán también los puntos de acceso que se documenten más adelante.]]></es>
+                <pt><![CDATA[Selecione APIs completas ou endpoints individuais para o arquivo OpenAPI público. Selecionar uma API completa também inclui os endpoints documentados posteriormente.]]></pt>
+                <fr><![CDATA[Sélectionnez des API entières ou des points de terminaison individuels pour le fichier OpenAPI public. La sélection d’une API entière inclut aussi les points de terminaison documentés par la suite.]]></fr>
+                <it><![CDATA[Seleziona intere API o singoli endpoint per il file OpenAPI pubblico. Selezionando un’intera API verranno inclusi anche gli endpoint documentati in seguito.]]></it>
+                <pl><![CDATA[Wybierz całe API lub poszczególne punkty końcowe do publicznego pliku OpenAPI. Wybór całego API obejmuje również punkty końcowe udokumentowane później.]]></pl>
+            </locale>
+        </groups>
+
+        <groups name="quiqqer/rest" datatype="js">
+            <locale name="settings.openapi.loading" context="administration">
+                <de><![CDATA[Lade APIs …]]></de>
+                <en><![CDATA[Loading APIs…]]></en>
+                <es><![CDATA[Cargando las API…]]></es>
+                <pt><![CDATA[Carregando APIs…]]></pt>
+                <fr><![CDATA[Chargement des API…]]></fr>
+                <it><![CDATA[Caricamento delle API…]]></it>
+                <pl><![CDATA[Wczytywanie API…]]></pl>
+            </locale>
+            <locale name="settings.openapi.empty" context="administration">
+                <de><![CDATA[Keine dokumentierten APIs verfügbar.]]></de>
+                <en><![CDATA[No documented APIs are available.]]></en>
+                <es><![CDATA[No hay API documentadas disponibles.]]></es>
+                <pt><![CDATA[Não há APIs documentadas disponíveis.]]></pt>
+                <fr><![CDATA[Aucune API documentée n’est disponible.]]></fr>
+                <it><![CDATA[Non sono disponibili API documentate.]]></it>
+                <pl><![CDATA[Brak udokumentowanych API.]]></pl>
+            </locale>
+            <locale name="settings.openapi.wholeApi" context="administration">
+                <de><![CDATA[Ganze API]]></de>
+                <en><![CDATA[Entire API]]></en>
+                <es><![CDATA[API completa]]></es>
+                <pt><![CDATA[API completa]]></pt>
+                <fr><![CDATA[API entière]]></fr>
+                <it><![CDATA[Intera API]]></it>
+                <pl><![CDATA[Całe API]]></pl>
+            </locale>
+            <locale name="settings.openapi.endpoints" context="administration">
+                <de><![CDATA[Endpunkte]]></de>
+                <en><![CDATA[Endpoints]]></en>
+                <es><![CDATA[Puntos de acceso]]></es>
+                <pt><![CDATA[Endpoints]]></pt>
+                <fr><![CDATA[Points de terminaison]]></fr>
+                <it><![CDATA[Endpoint]]></it>
+                <pl><![CDATA[Punkty końcowe]]></pl>
+            </locale>
+            <locale name="settings.openapi.unavailable" context="administration">
+                <de><![CDATA[nicht verfügbar]]></de>
+                <en><![CDATA[unavailable]]></en>
+                <es><![CDATA[no disponible]]></es>
+                <pt><![CDATA[indisponível]]></pt>
+                <fr><![CDATA[indisponible]]></fr>
+                <it><![CDATA[non disponibile]]></it>
+                <pl><![CDATA[niedostępne]]></pl>
+            </locale>
+            <locale name="settings.openapi.conflict" context="administration">
+                <de><![CDATA[Endpunkt überschneidet sich mit einem anderen Provider.]]></de>
+                <en><![CDATA[This endpoint conflicts with another provider.]]></en>
+                <es><![CDATA[Este punto de acceso entra en conflicto con otro proveedor.]]></es>
+                <pt><![CDATA[Este endpoint entra em conflito com outro provedor.]]></pt>
+                <fr><![CDATA[Ce point de terminaison est en conflit avec un autre fournisseur.]]></fr>
+                <it><![CDATA[Questo endpoint è in conflitto con un altro provider.]]></it>
+                <pl><![CDATA[Ten punkt końcowy jest w konflikcie z innym dostawcą.]]></pl>
+            </locale>
+            <locale name="settings.openapi.versionConflict" context="administration">
+                <de><![CDATA[Wähle APIs mit derselben OpenAPI-Versionsreihe.]]></de>
+                <en><![CDATA[Select APIs with the same OpenAPI version family.]]></en>
+                <es><![CDATA[Selecciona API de la misma familia de versiones de OpenAPI.]]></es>
+                <pt><![CDATA[Selecione APIs da mesma série de versões do OpenAPI.]]></pt>
+                <fr><![CDATA[Sélectionnez des API de la même série de versions d’OpenAPI.]]></fr>
+                <it><![CDATA[Seleziona API della stessa serie di versioni di OpenAPI.]]></it>
+                <pl><![CDATA[Wybierz API z tej samej rodziny wersji OpenAPI.]]></pl>
+            </locale>
+            <locale name="settings.openapi.loadError" context="administration">
+                <de><![CDATA[Die APIs konnten nicht geladen werden.]]></de>
+                <en><![CDATA[The APIs could not be loaded.]]></en>
+                <es><![CDATA[No se pudieron cargar las API.]]></es>
+                <pt><![CDATA[Não foi possível carregar as APIs.]]></pt>
+                <fr><![CDATA[Impossible de charger les API.]]></fr>
+                <it><![CDATA[Impossibile caricare le API.]]></it>
+                <pl><![CDATA[Nie udało się wczytać API.]]></pl>
+            </locale>
+            <locale name="settings.openapi.validationError" context="administration">
+                <de><![CDATA[Die OpenAPI-Auswahl konnte nicht geprüft werden.]]></de>
+                <en><![CDATA[The OpenAPI selection could not be validated.]]></en>
+                <es><![CDATA[No se pudo validar la selección de OpenAPI.]]></es>
+                <pt><![CDATA[Não foi possível validar a seleção do OpenAPI.]]></pt>
+                <fr><![CDATA[Impossible de valider la sélection OpenAPI.]]></fr>
+                <it><![CDATA[Impossibile convalidare la selezione OpenAPI.]]></it>
+                <pl><![CDATA[Nie udało się sprawdzić wyboru OpenAPI.]]></pl>
+            </locale>
+            <locale name="settings.openapi.invalidSelection" context="administration">
+                <de><![CDATA[Die gespeicherte OpenAPI-Auswahl ist ungültig.]]></de>
+                <en><![CDATA[The saved OpenAPI selection is invalid.]]></en>
+                <es><![CDATA[La selección de OpenAPI guardada no es válida.]]></es>
+                <pt><![CDATA[A seleção do OpenAPI salva é inválida.]]></pt>
+                <fr><![CDATA[La sélection OpenAPI enregistrée est invalide.]]></fr>
+                <it><![CDATA[La selezione OpenAPI salvata non è valida.]]></it>
+                <pl><![CDATA[Zapisany wybór OpenAPI jest nieprawidłowy.]]></pl>
+            </locale>
+        </groups>
+    </locales>
+</quiqqer>
