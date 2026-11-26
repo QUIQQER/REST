@@ -96,13 +96,15 @@ class EventHandler
             $Response = new JsonResponse(['error' => 'Method not allowed.'], 405, ['Allow' => 'GET, HEAD']);
         } else {
             try {
-                $stored = Settings::getConfig()->getValue('openapi', 'selection');
+                $Config = Settings::getConfig();
+                $stored = $Config->getValue('openapi', 'selection');
                 $selection = OpenApiPublication::parseSelection(is_string($stored) ? $stored : '');
 
                 if ($selection === []) {
                     $Response = new JsonResponse(['error' => 'OpenAPI publication is disabled.'], 404);
                 } else {
-                    $specification = Server::getCurrentInstance()->getPublishedOpenApi($selection);
+                    $contact = Settings::getOpenApiContact($Config);
+                    $specification = Server::getCurrentInstance()->getPublishedOpenApi($selection, $contact);
                     $Response = new JsonResponse($specification);
                 }
             } catch (Throwable $Exception) {
