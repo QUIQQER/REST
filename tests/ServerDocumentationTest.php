@@ -6,6 +6,9 @@ use GuzzleHttp\Psr7\ServerRequest;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use QUI\Config;
+use QUI\Projects\Manager as ProjectManager;
+use QUI\Projects\Project;
+use QUI\Projects\Site;
 use QUI\REST\OpenApiPublication;
 use QUI\REST\Response;
 use QUI\REST\Settings;
@@ -438,7 +441,7 @@ YAML,
         $selection = OpenApiPublication::parseSelection('{"First":["POST /validate"],"Second":true}');
         $contact = [
             'name' => 'API support',
-            'url' => 'https://example.test/index.php?id=12&project=demo&lang=en'
+            'url' => 'https://example.test/contact'
         ];
         $specification = $Server->getPublishedOpenApi($selection, $contact);
         $firstOperation = $specification['paths']['/validate']['post'];
@@ -526,15 +529,40 @@ YAML,
         self::assertSame([], Settings::getOpenApiContact($Config));
 
         $Config->setValue('openapi', 'contactName', ' API support ');
-        $Config->setValue('openapi', 'contactSite', 'https://example.test/contact');
+        $Config->setValue('openapi', 'contactSite', 'not-a-url');
         $Config->setValue('openapi', 'contactEmail', 'invalid');
         self::assertSame(['name' => 'API support'], Settings::getOpenApiContact($Config));
 
+        $url = 'https://support.example.test/contact?lang=en';
+        $Config->setValue('openapi', 'contactSite', $url);
         $Config->setValue('openapi', 'contactEmail', ' support@example.test ');
         self::assertSame(
-            ['name' => 'API support', 'email' => 'support@example.test'],
+            [
+                'name' => 'API support',
+                'url' => $url,
+                'email' => 'support@example.test'
+            ],
             Settings::getOpenApiContact($Config)
         );
+    }
+
+    public function testPublicationUsesTheRewrittenUrlForASelectedContactPage(): void
+    {
+        $Site = $this->createMock(Site::class);
+        $Site->expects(self::once())->method('getUrlRewrittenWithHost')->willReturn('https://example.test/Contact');
+        $Project = $this->createMock(Project::class);
+        $Project->expects(self::once())->method('get')->with(24)->willReturn($Site);
+        $projects = ProjectManager::$projects;
+        ProjectManager::$projects['openapi-contact-test'] = ['en' => $Project];
+
+        try {
+            $Config = new Config();
+            $Config->setValue('openapi', 'contactSite', 'index.php?id=24&project=openapi-contact-test&lang=en');
+
+            self::assertSame(['url' => 'https://example.test/Contact'], Settings::getOpenApiContact($Config));
+        } finally {
+            ProjectManager::$projects = $projects;
+        }
     }
 
     /**

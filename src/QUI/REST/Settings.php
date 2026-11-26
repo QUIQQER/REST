@@ -6,9 +6,6 @@
 
 namespace QUI\REST;
 
-use GuzzleHttp\Psr7\Uri;
-use GuzzleHttp\Psr7\UriResolver;
-use InvalidArgumentException;
 use QUI;
 use QUI\Projects\Site\Utils as SiteUtils;
 
@@ -38,7 +35,8 @@ class Settings extends QUI\Utils\Singleton
     {
         $contact = [];
         $name = $Config->getValue('openapi', 'contactName');
-        $siteLink = $Config->getValue('openapi', 'contactSite');
+        $contactUrl = $Config->getValue('openapi', 'contactSite');
+        $contactUrl = is_string($contactUrl) ? trim($contactUrl) : '';
         $email = $Config->getValue('openapi', 'contactEmail');
         $email = is_string($email) ? trim($email) : '';
 
@@ -46,16 +44,22 @@ class Settings extends QUI\Utils\Singleton
             $contact['name'] = trim($name);
         }
 
-        if (is_string($siteLink) && str_starts_with($siteLink, 'index.php?')) {
+        $siteLink = ltrim($contactUrl, '/');
+
+        if (str_starts_with($siteLink, 'index.php?') && SiteUtils::isSiteLink($siteLink)) {
             try {
                 $Site = SiteUtils::getSiteByLink($siteLink);
-                $siteBase = new Uri($Site->getProject()->getVHost(true, true));
-                $installationPath = rtrim('/' . ltrim(URL_DIR, '/'), '/') . '/';
-                $siteReference = new Uri($installationPath . $Site->getUrl());
-                $contact['url'] = (string)UriResolver::resolve($siteBase, $siteReference);
-            } catch (QUI\Exception | InvalidArgumentException $Exception) {
+                $contactUrl = $Site->getUrlRewrittenWithHost();
+            } catch (QUI\Exception $Exception) {
                 QUI\System\Log::writeDebugException($Exception);
             }
+        }
+
+        if (
+            filter_var($contactUrl, FILTER_VALIDATE_URL) !== false
+            && in_array(strtolower((string)parse_url($contactUrl, PHP_URL_SCHEME)), ['http', 'https'], true)
+        ) {
+            $contact['url'] = $contactUrl;
         }
 
         if (filter_var($email, FILTER_VALIDATE_EMAIL) !== false) {
